@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard | Multilingual HTR{% endblock %}
+
+{% block extra_css %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Top Welcome Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Welcome, {{ user.get_full_name|default:user.username }}!</h2>
+            <p class="text-muted small mb-0">Overview of your document recognitions, script distributions, and OCR activity.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'documents:upload' %}" class="btn btn-primary fw-semibold shadow-sm">
+                <i class="bi bi-cloud-arrow-up me-1"></i> Upload Document
+            </a>
+            <a href="{% url 'documents:list' %}" class="btn btn-outline-secondary fw-semibold">
+                <i class="bi bi-archive me-1"></i> Document Archive
+            </a>
+        </div>
+    </div>
+
+    <!-- Stat Cards Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card shadow-sm h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="stat-label">Total Documents</span>
+                    <span class="badge bg-primary-subtle text-primary p-2"><i class="bi bi-file-earmark-text fs-5"></i></span>
+                </div>
+                <div class="stat-value">{{ total_documents }}</div>
+                <div class="text-muted small mt-1">Uploaded across all sessions</div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card shadow-sm h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="stat-label">Completed OCR</span>
+                    <span class="badge bg-success-subtle text-success p-2"><i class="bi bi-check-circle-fill fs-5"></i></span>
+                </div>
+                <div class="stat-value text-success">{{ completed_count }}</div>
+                <div class="text-muted small mt-1">Successfully recognized</div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card shadow-sm h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="stat-label">In Progress / Pending</span>
+                    <span class="badge bg-warning-subtle text-warning p-2"><i class="bi bi-hourglass-split fs-5"></i></span>
+                </div>
+                <div class="stat-value text-warning">{{ pending_count }}</div>
+                <div class="text-muted small mt-1">Awaiting or executing OCR</div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card shadow-sm h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="stat-label">Avg Confidence</span>
+                    <span class="badge bg-info-subtle text-info p-2"><i class="bi bi-graph-up fs-5"></i></span>
+                </div>
+                <div class="stat-value text-primary">{{ avg_confidence }}%</div>
+                <div class="text-muted small mt-1">Across all transcribed pages</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-pie-chart me-2 text-primary"></i>Document Type Breakdown</h6>
+                </div>
+                <div class="card-body p-4 d-flex align-items-center justify-content-center" style="min-height: 260px;">
+                    <canvas id="docTypeChart" data-labels='{{ chart_type_labels|safe }}' data-values='{{ chart_type_data|safe }}'></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-bar-chart me-2 text-primary"></i>Language Distribution</h6>
+                </div>
+                <div class="card-body p-4" style="min-height: 260px;">
+                    <canvas id="docLangChart" data-labels='{{ chart_lang_labels|safe }}' data-values='{{ chart_lang_data|safe }}'></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Documents & Quick Recognition Table -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-clock-history me-2 text-primary"></i>Recent Documents</h6>
+            <a href="{% url 'documents:list' %}" class="btn btn-sm btn-link text-decoration-none">View All Documents &rarr;</a>
+        </div>
+        <div class="card-body p-0">
+            {% if recent_documents %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4 py-3">Document Title</th>
+                            <th class="py-3">Type</th>
+                            <th class="py-3">Language</th>
+                            <th class="py-3">Pages</th>
+                            <th class="py-3">Status</th>
+                            <th class="py-3">Uploaded</th>
+                            <th class="text-end pe-4 py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in recent_documents %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi {% if doc.is_pdf %}bi-file-earmark-pdf text-danger{% else %}bi-file-earmark-image text-primary{% endif %} fs-4 me-2"></i>
+                                    <div>
+                                        <a href="{% url 'documents:detail' doc.id %}" class="fw-semibold text-dark text-decoration-none">{{ doc.title }}</a>
+                                        <div class="text-muted small">{{ doc.original_filename }} &bull; {{ doc.formatted_file_size }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if doc.document_type == 'handwritten' %}
+                                <span class="badge badge-handwritten">Handwritten</span>
+                                {% elif doc.document_type == 'printed' %}
+                                <span class="badge badge-printed">Printed</span>
+                                {% else %}
+                                <span class="badge badge-mixed">Mixed</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">{{ doc.selected_language|upper }}</span>
+                            </td>
+                            <td>{{ doc.page_count }}</td>
+                            <td>
+                                {% if doc.status == 'completed' %}
+                                <span class="badge bg-success-subtle text-success"><i class="bi bi-check-circle me-1"></i>Completed</span>
+                                {% elif doc.status == 'processing' %}
+                                <span class="badge bg-warning-subtle text-warning"><i class="bi bi-arrow-repeat me-1"></i>Processing</span>
+                                {% elif doc.status == 'failed' %}
+                                <span class="badge bg-danger-subtle text-danger"><i class="bi bi-exclamation-triangle me-1"></i>Failed</span>
+                                {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary"><i class="bi bi-hourglass me-1"></i>Pending</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted small">{{ doc.uploaded_at|date:"M d, H:i" }}</td>
+                            <td class="text-end pe-4">
+                                {% if doc.status == 'completed' %}
+                                <a href="{% url 'documents:results' doc.id %}" class="btn btn-sm btn-outline-primary" title="View Results">
+                                    <i class="bi bi-card-text me-1"></i> Results
+                                </a>
+                                {% else %}
+                                <a href="{% url 'documents:recognize' doc.id %}" class="btn btn-sm btn-primary" title="Run Recognition">
+                                    <i class="bi bi-play-fill me-1"></i> Recognize
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="p-5 text-center text-muted">
+                <i class="bi bi-inbox fs-1 d-block mb-3 text-secondary"></i>
+                <p class="mb-3">No documents uploaded yet.</p>
+                <a href="{% url 'documents:upload' %}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-cloud-arrow-up me-1"></i> Upload Your First Document
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}

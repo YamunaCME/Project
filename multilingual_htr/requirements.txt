@@ -1,0 +1,29 @@
+# Multilingual Handwritten and Printed Text Recognition System
+# Compatible with Python 3.10+ on Windows, Linux, and macOS
+
+Django>=5.0,<7.0
+dj-database-url>=2.1.0
+python-dotenv>=1.0.0
+whitenoise>=6.6.0
+
+# Computer Vision, Preprocessing & PDF Processing
+opencv-python-headless>=4.8.0
+pillow>=10.0.0
+numpy>=1.24.0
+pypdfium2>=4.20.0
+
+# OCR & Machine Learning Engines
+torch>=2.0.0
+torchvision>=0.15.0
+easyocr>=1.7.0
+transformers>=4.35.0
+sentencepiece>=0.2.0
+tiktoken>=0.7.0
+
+# Optional Cloud & Translation Services
+google-cloud-vision>=3.4.0
+deep-translator>=1.11.0
+
+# Export Generation
+reportlab>=4.0.0
+python-docx>=1.0.0

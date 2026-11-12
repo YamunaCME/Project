@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Upload Document | Multilingual HTR{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-bottom py-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-cloud-arrow-up text-primary fs-4"></i>
+                        <h5 class="mb-0 fw-bold text-dark">Upload Document for Recognition</h5>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" id="uploadForm" novalidate>
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger py-2 small">
+                            {% for error in form.non_field_errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Drag and Drop Area -->
+                        <div class="mb-4">
+                            <label class="form-label small fw-semibold">Select or Drop Document *</label>
+                            
+                            <div class="dropzone-container" id="dropzone" onclick="document.getElementById('fileUploadInput').click();">
+                                <i class="bi bi-cloud-arrow-up dropzone-icon mb-2"></i>
+                                <h6 class="fw-bold mb-1">Drag and drop document here, or <span class="text-primary">browse</span></h6>
+                                <p class="text-muted small mb-0">Supported formats: JPG, PNG, TIFF, PDF (Max {{ MAX_UPLOAD_SIZE_MB }} MB)</p>
+                            </div>
+
+                            <!-- Live Preview Box -->
+                            <div id="uploadPreviewContainer" class="d-none border rounded-4 p-3 bg-light text-center">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="text-start">
+                                        <div class="fw-bold text-dark small" id="fileNameDisplay">filename.png</div>
+                                        <div class="text-muted small" id="fileSizeDisplay">1.2 MB</div>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" id="removeFileBtn">
+                                        <i class="bi bi-x-circle me-1"></i> Remove
+                                    </button>
+                                </div>
+                                <div class="preview-img-container rounded-3 bg-white border">
+                                    <img id="previewImage" src="" alt="Document Preview" class="img-fluid rounded">
+                                    <div id="previewPdf" class="d-none p-4 text-center">
+                                        <i class="bi bi-file-earmark-pdf text-danger fs-1 d-block mb-2"></i>
+                                        <span class="fw-semibold text-dark">PDF Document Selected</span>
+                                        <p class="text-muted small mb-0">Multi-page PDF will be decomposed into high-resolution pages for OCR.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Actual Hidden File Input -->
+                            <div class="d-none">
+                                {{ form.original_file }}
+                            </div>
+                            {% if form.original_file.errors %}
+                            <div class="text-danger small mt-2">{{ form.original_file.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Document Metadata -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-12">
+                                <label for="{{ form.title.id_for_label }}" class="form-label small fw-semibold">Document Title</label>
+                                {{ form.title }}
+                                <div class="form-text small">Optional. Defaults to original file name if left blank.</div>
+                                {% if form.title.errors %}
+                                <div class="text-danger small mt-1">{{ form.title.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="{{ form.selected_language.id_for_label }}" class="form-label small fw-semibold">Language Script *</label>
+                                {{ form.selected_language }}
+                                <div class="form-text small">Select language (English, Telugu, Hindi, etc.)</div>
+                                {% if form.selected_language.errors %}
+                                <div class="text-danger small mt-1">{{ form.selected_language.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="{{ form.document_type.id_for_label }}" class="form-label small fw-semibold">Document Form *</label>
+                                {{ form.document_type }}
+                                <div class="form-text small">Specifies printed vs handwritten layout.</div>
+                                {% if form.document_type.errors %}
+                                <div class="text-danger small mt-1">{{ form.document_type.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <a href="{% url 'dashboard:index' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-1"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold shadow-sm">
+                                <i class="bi bi-arrow-right-circle me-1"></i> Continue to Recognition &rarr;
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/upload.js' %}"></script>
+{% endblock %}

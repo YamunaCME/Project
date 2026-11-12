@@ -1,0 +1,74 @@
+{
+  "easyocr_english_handwritten": {
+    "sample": "sample_handwritten_english.png",
+    "document_type": "handwritten",
+    "language": "en",
+    "engine": "easyocr",
+    "ground_truth": "Dear student please submit the project report by Friday.\nEnsure all references and accuracy metrics are included.\nBest regards Faculty Advisory Board.",
+    "recognized_text": "Dear student please submitthe project report by Friday:\nEnsure all relerencesand accuracy metricsare included:\nBest regards Faculty Advisory Board:",
+    "confidence": 59.37,
+    "duration_seconds": 5.844,
+    "metrics": {
+      "cer_percent": 4.67,
+      "wer_percent": 40.91,
+      "char_distance": 7,
+      "word_distance": 9,
+      "ref_len_chars": 150,
+      "ref_len_words": 22
+    }
+  },
+  "trocr_english_handwritten": {
+    "sample": "sample_handwritten_english.png",
+    "document_type": "handwritten",
+    "language": "en",
+    "engine": "trocr",
+    "ground_truth": "Dear student please submit the project report by Friday.\nEnsure all references and accuracy metrics are included.\nBest regards Faculty Advisory Board.",
+    "recognized_text": "Neurolodertylease semid-objectyredly \" __\nEnsure adherence and management agencies .\n\" Sergeant Scully Henry Owen , 1 0",
+    "confidence": 33.1,
+    "duration_seconds": 10.682,
+    "metrics": {
+      "cer_percent": 60.67,
+      "wer_percent": 100.0,
+      "char_distance": 91,
+      "word_distance": 22,
+      "ref_len_chars": 150,
+      "ref_len_words": 22
+    }
+  },
+  "easyocr_telugu": {
+    "sample": "test_telugu.png",
+    "document_type": "printed",
+    "language": "te",
+    "engine": "easyocr",
+    "ground_truth": "నమస్కారం విద్యార్థుల ప్రాజెక్ట్ నివేదిక",
+    "recognized_text": "నమసకరం విదయార్థుల వ్రజెక్ట్ నివేదిక",
+    "confidence": 35.58,
+    "duration_seconds": 4.465,
+    "metrics": {
+      "cer_percent": 12.82,
+      "wer_percent": 75.0,
+      "char_distance": 5,
+      "word_distance": 3,
+      "ref_len_chars": 39,
+      "ref_len_words": 4
+    }
+  },
+  "easyocr_hindi": {
+    "sample": "test_hindi.png",
+    "document_type": "printed",
+    "language": "hi",
+    "engine": "easyocr",
+    "ground_truth": "बहुभाषी हस्तलिखित पाठ पहचान प्रणाली",
+    "recognized_text": "बहुभाषी हस्तलखिति पाठ पहचान प्रणाली",
+    "confidence": 76.05,
+    "duration_seconds": 12.061,
+    "metrics": {
+      "cer_percent": 5.71,
+      "wer_percent": 20.0,
+      "char_distance": 2,
+      "word_distance": 1,
+      "ref_len_chars": 35,
+      "ref_len_words": 5
+    }
+  }
+}

@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Document Archive | Multilingual HTR{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Document Archive & History</h2>
+            <p class="text-muted small mb-0">Search, filter, manage, and export your uploaded and recognized documents.</p>
+        </div>
+        <div>
+            <a href="{% url 'documents:upload' %}" class="btn btn-primary fw-semibold shadow-sm">
+                <i class="bi bi-cloud-arrow-up me-1"></i> Upload New Document
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters & Search Toolbar -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-3">
+            <form method="get" class="row g-2 align-items-center">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search by title or filename...">
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-md-2">
+                    <select name="status" class="form-select">
+                        <option value="">All Statuses</option>
+                        {% for code, label in status_choices %}
+                        <option value="{{ code }}" {% if selected_status == code %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-sm-6 col-md-2">
+                    <select name="language" class="form-select">
+                        <option value="">All Languages</option>
+                        {% for lang in languages %}
+                        <option value="{{ lang.code }}" {% if selected_lang == lang.code %}selected{% endif %}>{{ lang.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-sm-6 col-md-2">
+                    <select name="type" class="form-select">
+                        <option value="">All Types</option>
+                        {% for code, label in type_choices %}
+                        <option value="{{ code }}" {% if selected_type == code %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-sm-6 col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary w-100 fw-semibold">
+                        Filter
+                    </button>
+                    {% if query or selected_status or selected_lang or selected_type %}
+                    <a href="{% url 'documents:list' %}" class="btn btn-outline-secondary" title="Clear Filters">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Documents Table -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-0">
+            {% if documents %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4 py-3">Document</th>
+                            <th class="py-3">Type</th>
+                            <th class="py-3">Language</th>
+                            <th class="py-3">Pages</th>
+                            <th class="py-3">Status</th>
+                            <th class="py-3">Uploaded</th>
+                            <th class="text-end pe-4 py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in documents %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi {% if doc.is_pdf %}bi-file-earmark-pdf text-danger{% else %}bi-file-earmark-image text-primary{% endif %} fs-3 me-2"></i>
+                                    <div>
+                                        <a href="{% url 'documents:detail' doc.id %}" class="fw-semibold text-dark text-decoration-none">{{ doc.title }}</a>
+                                        <div class="text-muted small">{{ doc.original_filename }} &bull; {{ doc.formatted_file_size }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if doc.document_type == 'handwritten' %}
+                                <span class="badge badge-handwritten">Handwritten</span>
+                                {% elif doc.document_type == 'printed' %}
+                                <span class="badge badge-printed">Printed</span>
+                                {% else %}
+                                <span class="badge badge-mixed">Mixed</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">{{ doc.selected_language|upper }}</span>
+                            </td>
+                            <td>{{ doc.page_count }}</td>
+                            <td>
+                                {% if doc.status == 'completed' %}
+                                <span class="badge bg-success-subtle text-success"><i class="bi bi-check-circle me-1"></i>Completed</span>
+                                {% elif doc.status == 'processing' %}
+                                <span class="badge bg-warning-subtle text-warning"><i class="bi bi-arrow-repeat me-1"></i>Processing</span>
+                                {% elif doc.status == 'failed' %}
+                                <span class="badge bg-danger-subtle text-danger"><i class="bi bi-exclamation-triangle me-1"></i>Failed</span>
+                                {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary"><i class="bi bi-hourglass me-1"></i>Pending</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted small">{{ doc.uploaded_at|date:"M d, Y" }}</td>
+                            <td class="text-end pe-4">
+                                <div class="btn-group">
+                                    {% if doc.status == 'completed' %}
+                                    <a href="{% url 'documents:results' doc.id %}" class="btn btn-sm btn-outline-primary" title="View Results">
+                                        <i class="bi bi-card-text"></i> Results
+                                    </a>
+                                    {% else %}
+                                    <a href="{% url 'documents:recognize' doc.id %}" class="btn btn-sm btn-primary" title="Run Recognition">
+                                        <i class="bi bi-play-fill"></i> OCR
+                                    </a>
+                                    {% endif %}
+
+                                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span class="visually-hidden">Toggle Dropdown</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                        <li><a class="dropdown-item" href="{% url 'documents:detail' doc.id %}"><i class="bi bi-eye me-2"></i>Details</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'documents:recognize' doc.id %}"><i class="bi bi-gear me-2"></i>Configure OCR</a></li>
+                                        {% if doc.status == 'completed' %}
+                                        <li><a class="dropdown-item" href="{% url 'documents:translate' doc.id %}"><i class="bi bi-translate me-2"></i>Translate</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><h6 class="dropdown-header">Export</h6></li>
+                                        <li><a class="dropdown-item" href="{% url 'documents:export_pdf' doc.id %}"><i class="bi bi-file-earmark-pdf text-danger me-2"></i>Export PDF</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'documents:export_docx' doc.id %}"><i class="bi bi-file-earmark-word text-primary me-2"></i>Export DOCX</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'documents:export_txt' doc.id %}"><i class="bi bi-file-text me-2"></i>Export TXT</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'documents:export_csv' doc.id %}"><i class="bi bi-file-spreadsheet text-success me-2"></i>Export CSV</a></li>
+                                        {% endif %}
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ doc.id }}">
+                                                <i class="bi bi-trash me-2"></i>Delete
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <!-- Delete Confirmation Modal -->
+                                <div class="modal fade" id="deleteModal{{ doc.id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered text-start">
+                                        <div class="modal-content border-0 shadow">
+                                            <div class="modal-header border-bottom">
+                                                <h5 class="modal-title fw-bold text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Delete Document</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body p-4">
+                                                <p>Are you sure you want to permanently delete <strong>{{ doc.title }}</strong>?</p>
+                                                <p class="text-muted small mb-0">This will remove the uploaded files, OCR transcripts, and translations from the server. This action cannot be undone.</p>
+                                            </div>
+                                            <div class="modal-footer border-top">
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <form method="post" action="{% url 'documents:delete' doc.id %}" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger">Permanently Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <div class="p-3 border-top d-flex justify-content-between align-items-center">
+                <span class="text-muted small">Showing page {{ page_obj.number }} of {{ paginator.num_pages }}</span>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-sm mb-0">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if selected_lang %}&language={{ selected_lang }}{% endif %}">Previous</a>
+                        </li>
+                        {% endif %}
+                        <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if selected_lang %}&language={{ selected_lang }}{% endif %}">Next</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+
+            {% else %}
+            <div class="p-5 text-center text-muted">
+                <i class="bi bi-search fs-1 text-secondary d-block mb-3"></i>
+                <h5>No documents found</h5>
+                <p class="small">Try adjusting your filters or upload a new document.</p>
+                <a href="{% url 'documents:upload' %}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-cloud-arrow-up me-1"></i> Upload Document
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}User Profile | Multilingual HTR{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4 text-center">
+                    <div class="feature-icon-wrapper mx-auto mb-3" style="width: 72px; height: 72px; font-size: 2rem;">
+                        <i class="bi bi-person"></i>
+                    </div>
+                    <h5 class="fw-bold mb-1">{{ user.get_full_name|default:user.username }}</h5>
+                    <p class="text-muted small mb-2">{{ user.email }}</p>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1">
+                        {{ profile.get_preferred_language_display }}
+                    </span>
+                    <hr class="my-3">
+                    <div class="text-start small text-muted">
+                        <div class="mb-2"><i class="bi bi-calendar3 me-2"></i> Joined: {{ user.date_joined|date:"M d, Y" }}</div>
+                        <div class="mb-2"><i class="bi bi-cpu me-2"></i> Default Engine: {{ profile.get_preferred_engine_display }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="list-group shadow-sm border-0 rounded-4 overflow-hidden">
+                <a href="{% url 'accounts:profile' %}" class="list-group-item list-group-item-action active py-3">
+                    <i class="bi bi-person-gear me-2"></i> Account Preferences
+                </a>
+                <a href="{% url 'accounts:password_change' %}" class="list-group-item list-group-item-action py-3">
+                    <i class="bi bi-shield-lock me-2"></i> Change Password
+                </a>
+                <a href="{% url 'documents:list' %}" class="list-group-item list-group-item-action py-3">
+                    <i class="bi bi-folder2 me-2"></i> My Document Archive
+                </a>
+            </div>
+        </div>
+
+        <!-- Profile Form -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-sliders me-2 text-primary"></i>Profile & OCR Preferences</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <h6 class="fw-semibold text-secondary text-uppercase small mb-3">User Details</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">First Name</label>
+                                {{ u_form.first_name }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Last Name</label>
+                                {{ u_form.last_name }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold">Email Address</label>
+                                {{ u_form.email }}
+                                {% if u_form.email.errors %}
+                                <div class="text-danger small mt-1">{{ u_form.email.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <h6 class="fw-semibold text-secondary text-uppercase small mb-3">Recognition Defaults</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Organization / University</label>
+                                {{ p_form.organization }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Preferred Working Language</label>
+                                {{ p_form.preferred_language }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold">Default OCR Engine</label>
+                                {{ p_form.preferred_engine }}
+                                <div class="form-text small">
+                                    EasyOCR runs locally with multilingual Indian scripts (Telugu, Hindi, etc.). TrOCR is specialized for English handwriting.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold">
+                                <i class="bi bi-save me-1"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

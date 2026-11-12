@@ -1,0 +1,30 @@
+Efficient for block data transfer.
+Improves overall system performance.
+
+Priority Interrupt: Polling and Daisychaining
+
+An interrupt is an unexpected event in the system which requires service by CPU.
+Multiple interrupt requests can be assigned different priority levels and the CPU services the highest priority request first.
+
+Many I/O devices may request CPU services simultaneously.
+Some devices are time critical.
+Priority ensures important devices are serviced first.
+
+So, simultaneous interrupts can be established either by:
+1. S/W method or
+2. H/W method
+
+The S/W method which gives priority to simultaneous interrupts is called "polling".
+The H/W method which gives priority to simultaneous interrupts is called "daisychaining".
+
+Software method - (polling):
+Polling is a S/W based interrupt handling method in which the CPU checks the status of each I/O device one by one to find which device has requested service.
+Priority is not decided by the hardware.
+The first device found requesting service is treated as highest priority and remaining devices will be in waiting state.
+
+CPU uses a set of program or S/W test routine to test the devices.
+The structure looks like following:
+
+if (device[0]_flag)
+    device[0].service();
+else if (device[1].flag)

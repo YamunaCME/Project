@@ -1,0 +1,372 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Multilingual HTR | Convert Handwritten & Printed Documents into Editable Text{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container text-center py-4">
+        <div class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-semibold mb-3">
+            <i class="bi bi-stars me-1"></i> Multi-Script OCR & Deep Learning HTR Platform
+        </div>
+        <h1 class="hero-title mx-auto mb-3">
+            Convert Handwritten and Printed Documents into Editable Text
+        </h1>
+        <p class="hero-subtitle mx-auto mb-4">
+            A state-of-the-art recognition system supporting English, Telugu, Hindi, and Indian regional languages. 
+            Empowered by EasyOCR, TrOCR Transformer architectures, and OpenCV document preprocessing.
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            {% if user.is_authenticated %}
+            <a href="{% url 'documents:upload' %}" class="btn btn-primary btn-lg px-4 py-2 fw-semibold shadow">
+                <i class="bi bi-cloud-arrow-up me-2"></i> Start Recognition
+            </a>
+            <a href="{% url 'dashboard:index' %}" class="btn btn-outline-dark btn-lg px-4 py-2 fw-semibold">
+                <i class="bi bi-speedometer2 me-2"></i> Go to Dashboard
+            </a>
+            {% else %}
+            <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-lg px-4 py-2 fw-semibold shadow">
+                <i class="bi bi-rocket-takeoff me-2"></i> Start Recognition
+            </a>
+            <a href="{% url 'accounts:login' %}" class="btn btn-outline-dark btn-lg px-4 py-2 fw-semibold">
+                <i class="bi bi-box-arrow-in-right me-2"></i> Existing User Log In
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h6 class="text-primary fw-bold text-uppercase">Core Capabilities</h6>
+            <h2 class="fw-bold text-dark">Engineered for Multilingual Precision</h2>
+            <p class="text-muted">Overcoming the complexities of diverse Indian scripts and cursive handwritten strokes</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="bi bi-pen"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Handwritten & Printed Recognition</h5>
+                    <p class="text-muted small mb-0">
+                        Process cursive personal notes, historical records, receipts, and printed book pages with model selection tailored to script type.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="bi bi-translate"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Telugu & Hindi Priority</h5>
+                    <p class="text-muted small mb-0">
+                        First-class support for Telugu (తెలుగు) and Hindi (हिन्दी) alongside English, Tamil, Kannada, Marathi, and Bengali scripts.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="bi bi-cpu"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Modular OCR Engine Layer</h5>
+                    <p class="text-muted small mb-0">
+                        Seamlessly switch between EasyOCR (offline deep learning), TrOCR (Hugging Face Transformers), and Google Cloud Vision.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="bi bi-magic"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">OpenCV Image Preprocessing</h5>
+                    <p class="text-muted small mb-0">
+                        Automatic deskewing, CLAHE contrast enhancement, adaptive thresholding, and noise filtering optimize low-contrast scans.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="bi bi-file-earmark-pdf"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Multi-Page PDF Processing</h5>
+                    <p class="text-muted small mb-0">
+                        Native PDF document handling converting pages into high-resolution images while strictly preserving page boundaries and metadata.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="bi bi-download"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Multi-Format Exports</h5>
+                    <p class="text-muted small mb-0">
+                        Export your verified transcripts instantly to PDF (ReportLab), Word (.docx), Plain Text (.txt), or structured CSV spreadsheets.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section id="how-it-works" class="py-5 bg-white border-top border-bottom">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h6 class="text-primary fw-bold text-uppercase">The Pipeline</h6>
+            <h2 class="fw-bold text-dark">How Document Recognition Works</h2>
+            <p class="text-muted">A clear, verifiable 4-step pipeline from upload to export</p>
+        </div>
+
+        <div class="row g-4 text-center">
+            <div class="col-md-3">
+                <div class="p-3">
+                    <div class="rounded-circle bg-primary-subtle text-primary mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">
+                        1
+                    </div>
+                    <h6 class="fw-bold text-dark mb-2">Upload Document</h6>
+                    <p class="text-muted small mb-0">Upload scanned images (PNG, JPG, TIFF) or multi-page PDFs securely.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3">
+                    <div class="rounded-circle bg-primary-subtle text-primary mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">
+                        2
+                    </div>
+                    <h6 class="fw-bold text-dark mb-2">OpenCV Enhancement</h6>
+                    <p class="text-muted small mb-0">Apply deskewing, noise filtering, and contrast tuning tailored to text type.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3">
+                    <div class="rounded-circle bg-primary-subtle text-primary mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">
+                        3
+                    </div>
+                    <h6 class="fw-bold text-dark mb-2">Language-Aware OCR</h6>
+                    <p class="text-muted small mb-0">The capability registry dispatches to the most accurate compatible model.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3">
+                    <div class="rounded-circle bg-primary-subtle text-primary mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">
+                        4
+                    </div>
+                    <h6 class="fw-bold text-dark mb-2">Edit, Translate & Export</h6>
+                    <p class="text-muted small mb-0">Review confidence scores, edit transcriptions, translate, and export in 4 formats.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Supported Languages & Capability Registry -->
+<section id="languages" class="py-5">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h6 class="text-primary fw-bold text-uppercase">Capability Matrix</h6>
+            <h2 class="fw-bold text-dark">Supported Languages & OCR Engines</h2>
+            <p class="text-muted">Honest, documented capabilities without fabricated accuracy claims</p>
+        </div>
+
+        <div class="table-responsive shadow-sm rounded-4 border bg-white mb-4">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="py-3 px-4">Language</th>
+                        <th class="py-3">Script</th>
+                        <th class="py-3">EasyOCR (Local)</th>
+                        <th class="py-3">TrOCR (Transformer)</th>
+                        <th class="py-3">Google Cloud Vision</th>
+                        <th class="py-3">Priority Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="px-4 fw-semibold"><i class="bi bi-check-circle-fill text-success me-2"></i>English</td>
+                        <td>Latin</td>
+                        <td><span class="badge bg-success-subtle text-success">Printed & Handwritten</span></td>
+                        <td><span class="badge bg-primary-subtle text-primary">Handwriting Specialized</span></td>
+                        <td><span class="badge bg-success-subtle text-success">Printed & Handwritten</span></td>
+                        <td><span class="badge bg-primary">Priority</span></td>
+                    </tr>
+                    <tr>
+                        <td class="px-4 fw-semibold"><i class="bi bi-check-circle-fill text-success me-2"></i>Telugu (తెలుగు)</td>
+                        <td>Telugu</td>
+                        <td><span class="badge bg-success-subtle text-success">Printed & Clear Hand.</span></td>
+                        <td><span class="badge bg-secondary-subtle text-secondary" title="TrOCR models are English-only">Unsupported (English Only)</span></td>
+                        <td><span class="badge bg-success-subtle text-success">Printed & Handwritten</span></td>
+                        <td><span class="badge bg-primary">Priority</span></td>
+                    </tr>
+                    <tr>
+                        <td class="px-4 fw-semibold"><i class="bi bi-check-circle-fill text-success me-2"></i>Hindi (हिन्दी)</td>
+                        <td>Devanagari</td>
+                        <td><span class="badge bg-success-subtle text-success">Printed & Clear Hand.</span></td>
+                        <td><span class="badge bg-secondary-subtle text-secondary">Unsupported (English Only)</span></td>
+                        <td><span class="badge bg-success-subtle text-success">Printed & Handwritten</span></td>
+                        <td><span class="badge bg-primary">Priority</span></td>
+                    </tr>
+                    <tr>
+                        <td class="px-4 fw-semibold">Tamil (தமிழ்)</td>
+                        <td>Tamil</td>
+                        <td><span class="badge bg-success-subtle text-success">Printed & Clear Hand.</span></td>
+                        <td><span class="badge bg-secondary-subtle text-secondary">Unsupported</span></td>
+                        <td><span class="badge bg-success-subtle text-success">Printed & Handwritten</span></td>
+                        <td><span class="badge bg-light text-muted border">Supported</span></td>
+                    </tr>
+                    <tr>
+                        <td class="px-4 fw-semibold">Kannada (ಕನ್ನಡ)</td>
+                        <td>Kannada</td>
+                        <td><span class="badge bg-success-subtle text-success">Printed & Clear Hand.</span></td>
+                        <td><span class="badge bg-secondary-subtle text-secondary">Unsupported</span></td>
+                        <td><span class="badge bg-success-subtle text-success">Printed & Handwritten</span></td>
+                        <td><span class="badge bg-light text-muted border">Supported</span></td>
+                    </tr>
+                    <tr>
+                        <td class="px-4 fw-semibold">Marathi (मराठी)</td>
+                        <td>Devanagari</td>
+                        <td><span class="badge bg-success-subtle text-success">Printed & Clear Hand.</span></td>
+                        <td><span class="badge bg-secondary-subtle text-secondary">Unsupported</span></td>
+                        <td><span class="badge bg-success-subtle text-success">Printed & Handwritten</span></td>
+                        <td><span class="badge bg-light text-muted border">Supported</span></td>
+                    </tr>
+                    <tr>
+                        <td class="px-4 fw-semibold">Bengali (বাংলা)</td>
+                        <td>Bengali</td>
+                        <td><span class="badge bg-success-subtle text-success">Printed & Clear Hand.</span></td>
+                        <td><span class="badge bg-secondary-subtle text-secondary">Unsupported</span></td>
+                        <td><span class="badge bg-success-subtle text-success">Printed & Handwritten</span></td>
+                        <td><span class="badge bg-light text-muted border">Supported</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="alert alert-info py-2 small d-flex align-items-center mb-0">
+            <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+            <div>
+                <strong>Engine Guarding:</strong> If an incompatible combination is chosen (such as TrOCR for Telugu or Hindi), the registry automatically rejects execution with a helpful warning and routes to EasyOCR or Google Cloud Vision.
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Supported Formats & Privacy -->
+<section class="py-5 bg-white border-top">
+    <div class="container py-4">
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-6">
+                <h6 class="text-primary fw-bold text-uppercase">Supported Formats</h6>
+                <h3 class="fw-bold text-dark mb-3">Accepting Images and Multi-Page Documents</h3>
+                <p class="text-muted">
+                    Upload documents up to <strong>25 MB</strong> in size. Multi-page PDFs (up to 15 pages) are automatically decomposed into high-fidelity image pages, processed individually, and presented with individual page transcription navigation.
+                </p>
+                <div class="d-flex gap-2 flex-wrap mb-4">
+                    <span class="badge bg-light text-dark border px-3 py-2 fs-6"><i class="bi bi-filetype-jpg text-primary me-1"></i> JPG / JPEG</span>
+                    <span class="badge bg-light text-dark border px-3 py-2 fs-6"><i class="bi bi-filetype-png text-primary me-1"></i> PNG</span>
+                    <span class="badge bg-light text-dark border px-3 py-2 fs-6"><i class="bi bi-file-earmark-image text-primary me-1"></i> TIFF / TIF</span>
+                    <span class="badge bg-light text-dark border px-3 py-2 fs-6"><i class="bi bi-file-earmark-pdf text-danger me-1"></i> PDF</span>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card bg-light border-0 rounded-4 p-4">
+                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-shield-lock-fill text-primary me-2"></i>Data Privacy & Security</h5>
+                    <ul class="list-unstyled d-flex flex-column gap-3 text-muted small mb-0">
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="bi bi-check-circle-fill text-success fs-6 mt-1"></i>
+                            <div><strong>Strict Ownership Protection:</strong> Documents and recognized text are strictly private to your authenticated user account.</div>
+                        </li>
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="bi bi-check-circle-fill text-success fs-6 mt-1"></i>
+                            <div><strong>Offline Local Execution:</strong> EasyOCR and TrOCR run entirely on your local machine without transmitting documents over the internet.</div>
+                        </li>
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="bi bi-check-circle-fill text-success fs-6 mt-1"></i>
+                            <div><strong>No Hardcoded Credentials:</strong> All optional cloud keys are read strictly through environment variables.</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Accordion -->
+<section id="faq" class="py-5">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h6 class="text-primary fw-bold text-uppercase">Frequently Asked Questions</h6>
+            <h2 class="fw-bold text-dark">Clear Answers on OCR Performance</h2>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="accordion shadow-sm" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                Can EasyOCR recognize handwritten Telugu and Hindi text?
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted small">
+                                EasyOCR provides good recognition for printed Indian scripts and reasonably legible handwriting. However, for heavily cursive, rapid, or connected handwritten Telugu or Hindi notes, accuracy is influenced by stroke clarity. Preprocessing (deskew and contrast tuning) improves detection significantly.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                Why is TrOCR restricted to English documents?
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted small">
+                                The Microsoft TrOCR models (e.g., <code>microsoft/trocr-base-handwritten</code>) were trained specifically on the IAM English handwriting corpus. They do not possess vocabulary or tokenizers for Devanagari or Dravidian Telugu scripts. Our system explicitly enforces this constraint to avoid gibberish outputs.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                Do I need paid Google Cloud Vision credentials to use this system?
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted small">
+                                <strong>No.</strong> The application is designed to run 100% locally with EasyOCR and TrOCR out of the box without any external API keys or payment. Google Cloud Vision is an optional cloud enhancement that can be configured via <code>.env</code> when desired.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingFour">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                How are multi-page PDFs handled?
+                            </button>
+                        </h2>
+                        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted small">
+                                PDFs are converted page-by-page into image renders. OCR is performed on each page independently, creating distinct page-level result entries. When exporting or viewing, each page's text is clearly demarcated, ensuring no loss of document structure.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

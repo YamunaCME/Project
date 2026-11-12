@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Translate Document | {{ document.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'documents:list' %}">Documents</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'documents:results' document.id %}">Results</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Translation</li>
+        </ol>
+    </nav>
+
+    <!-- Header Card -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <h4 class="fw-bold mb-1 text-dark"><i class="bi bi-translate text-primary me-2"></i>Multilingual Translation</h4>
+                <p class="text-muted small mb-0">Translate recognized transcripts across English, Telugu, Hindi, and regional languages.</p>
+            </div>
+            <div>
+                <a href="{% url 'documents:results' document.id %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Results
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Translation Translation Form -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+            <form method="post" class="row g-3 align-items-end">
+                {% csrf_token %}
+                <input type="hidden" name="page_number" value="1">
+
+                <div class="col-md-5">
+                    <label class="form-label small fw-semibold">Source Language</label>
+                    <input type="text" class="form-control" value="{{ document.selected_language|upper }}" disabled>
+                    <input type="hidden" name="source_language" value="{{ document.selected_language }}">
+                    <div class="form-text small">Derived from document recognition language</div>
+                </div>
+
+                <div class="col-md-5">
+                    <label for="{{ form.target_language.id_for_label }}" class="form-label small fw-semibold">Target Translation Language *</label>
+                    {{ form.target_language }}
+                    <div class="form-text small">Select desired target language</div>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100 fw-semibold">
+                        <i class="bi bi-arrow-left-right me-1"></i> Translate
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Side-by-Side Comparison -->
+    <div class="row g-4">
+        <!-- Original Recognized Text -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-file-text me-2 text-primary"></i>Source OCR Text ({{ document.selected_language|upper }})
+                    </h6>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-copy-target="#sourceText" title="Copy text">
+                        <i class="bi bi-clipboard"></i> Copy
+                    </button>
+                </div>
+                <div class="card-body p-4">
+                    <div id="sourceText" class="p-3 bg-light rounded-3 font-monospace small" style="min-height: 280px; white-space: pre-wrap;">
+                        {% for res in results %}
+                            {% if document.page_count > 1 %}<strong>--- PAGE {{ res.page_number }} ---</strong><br>{% endif %}
+                            {{ res.effective_text }}
+                        {% empty %}
+                            (No recognized text available. Please run OCR first.)
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Translated Output -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-check2-circle me-2 text-success"></i>Translated Output
+                        {% if translation %}
+                        <span class="badge bg-success-subtle text-success border border-success-subtle ms-2">{{ translation.target_language|upper }}</span>
+                        {% endif %}
+                    </h6>
+                    {% if translation %}
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-copy-target="#translatedText" title="Copy translated text">
+                        <i class="bi bi-clipboard"></i> Copy
+                    </button>
+                    {% endif %}
+                </div>
+                <div class="card-body p-4">
+                    {% if translation %}
+                    <div id="translatedText" class="p-3 bg-white border rounded-3 font-monospace small" style="min-height: 280px; white-space: pre-wrap;">{{ translation.translated_text }}</div>
+                    <div class="text-muted small mt-2">
+                        <i class="bi bi-info-circle me-1"></i> Provider: {{ translation.provider }} &bull; Translated on {{ translation.created_at|date:"M d, H:i" }}
+                    </div>
+                    {% else %}
+                    <div class="p-5 text-center text-muted">
+                        <i class="bi bi-translate fs-1 text-secondary d-block mb-3"></i>
+                        <p class="mb-0">Choose a target language above and click "Translate" to view side-by-side translation.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
